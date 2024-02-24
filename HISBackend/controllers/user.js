@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Messages = require("../models/Messages");
 
 const updateProfile = async (req, res) => {
   const { name, phone, about, address } = req.body;
@@ -41,7 +42,9 @@ const updateProfliePhoto = async (req, res) => {
 
 const getAllDoctors = async (req, res) => {
   try {
-    const doctors = await User.find({ role: "DOCTOR", active: true });
+    const doctors = await User.find({ role: "DOCTOR", active: true }).select(
+      "name _id imgUrl phoneNumber"
+    );
 
     return res.status(200).json({ success: true, doctors });
   } catch (err) {
@@ -51,7 +54,9 @@ const getAllDoctors = async (req, res) => {
 
 const getAllpatients = async (req, res) => {
   try {
-    const patients = await User.find({ role: "PATIENT", active: true });
+    const patients = await User.find({ role: "PATIENT", active: true }).select(
+      "name _id imgUrl phoneNumber"
+    );
 
     return res.status(200).json({ success: true, patients });
   } catch (err) {
@@ -59,9 +64,41 @@ const getAllpatients = async (req, res) => {
   }
 };
 
+const getAllMessages = async (req, res) => {
+  try {
+    const { receiverId } = req.params;
+    const messageId =
+      req.user._id >= receiverId
+        ? req.user._id + receiverId
+        : receiverId + req.user._id;
+    const messages = await Messages.find({ messageId });
+
+    res.status(200).json({ success: true, messages });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: "Invalid Request" });
+  }
+};
+
+// Only for Websockt
+const sendMessage = async (payload, file) => {
+  const { senderId, receiverId, message } = payload;
+  const messageId =
+    senderId >= receiverId ? senderId + receiverId : receiverId + senderId;
+  const messageDoc = await Messages.create({
+    sender: senderId,
+    receiver: receiverId,
+    content: message,
+    messageId,
+    file,
+  });
+  return messageDoc;
+};
+
 module.exports = {
   updateProfile,
   updateProfliePhoto,
   getAllDoctors,
   getAllpatients,
+  getAllMessages,
+  sendMessage,
 };

@@ -5,6 +5,7 @@ const {
   updateProfile,
   updateProfliePhoto,
   getAllDoctors,
+  getAllMessages,
 } = require("../controllers/user");
 const { isPatient, isDoctor } = require("../middlewares/auth");
 const { upload } = require("../middlewares/multer");
@@ -15,9 +16,13 @@ const router = express.Router();
 router.put("/update", updateProfile);
 router.put("/profile-photo", upload.single("profile"), updateProfliePhoto);
 
+// MESSAGE ROTES
+router.get("/messages/all/:receiverId", getAllMessages);
+
 // DOCTOR ROUTES
 router.get("/doctors/all", isPatient, getAllDoctors);
 
 // PATIENT ROUTES
 router.get("/patients/all", isDoctor, getAllpatients);
+
 module.exports = router;

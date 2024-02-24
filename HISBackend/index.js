@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const { startSocketServer } = require("./socket");
 
 // Import Middleware
 const { isLoggedIn, isAdmin } = require("./middlewares/auth");
@@ -32,4 +33,8 @@ mongoose
   .then(() => console.log("Database Connected"))
   .catch((err) => console.log(`Databse Connection Faield : ${err.message} `));
 
-app.listen(PORT, () => console.log(`Server is running on port ${PORT} `));
+const server = app.listen(PORT, () =>
+  console.log(`Server is running on port ${PORT} `)
+);
+
+startSocketServer(server);

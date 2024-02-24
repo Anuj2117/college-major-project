@@ -1,7 +1,8 @@
-import { createContext, useState } from "react";
+import { createContext, useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 import { useNavigate } from "react-router-dom";
+import { socket } from "./socket";
 
 export const HisContext = createContext(null);
 
@@ -118,9 +119,149 @@ export default function HisProvider({ children }) {
       .catch((err) => toast.error(err.message));
   };
 
+  // all the user with which you can chat
+  const [users, setUsers] = useState([]);
+
+  const fetchAllDoctors = () => {
+    fetch(`${BASE_URL}/user/doctors/all`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user && user.accessToken,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setUsers(data.doctors);
+        } else {
+          toast.error(data.message);
+        }
+      })
+      .catch((err) => alert(err.message));
+  };
+
+  const fetchAllPatients = () => {
+    fetch(`${BASE_URL}/user/patients/all`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user && user.accessToken,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setUsers(data.patients);
+        } else {
+          toast.error(data.message);
+        }
+      })
+      .catch((err) => alert(err.message));
+  };
+
+  // if user exist then only connect to socket
+  useEffect(() => {
+    if (user) {
+      socket.connect();
+
+      return () => {
+        socket.disconnect();
+      };
+    }
+  }, [user]);
+
+  const [messages, setMessages] = useState([]);
+
+  const sendMessage = (messaget) => {
+    const message = messaget.trim();
+    if (message.length == 0) {
+      toast.error("Invalid Message");
+      return;
+    }
+    // check if receiver and user is there then only we can send message
+    if (receiver && user) {
+      const payload = {
+        message,
+        receiverId: receiver._id,
+        senderId: user && user._id,
+      };
+
+      socket.emit("message-received", payload);
+    } else {
+      toast.error("Failed to send Message");
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      if (user.role == "DOCTOR") {
+        fetchAllPatients();
+      } else if (user.role == "PATIENT") {
+        fetchAllDoctors();
+      }
+    }
+  }, [user]);
+
+  // CHAT THING IS GOING TO START FROM HERE //
+
+  const [receiver, setReceiver] = useState(null);
+
+  const receivedMessage = (payload) => {
+    setMessages((prev) => [...prev, payload]);
+  };
+
+  const fetchAllMessages = () => {
+    fetch(`${BASE_URL}/user/messages/all/${receiver._id}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user && user.accessToken,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setMessages(data.messages);
+        } else {
+          toast.error(data.message);
+        }
+      })
+      .catch((err) => toast.error("Error while loading messages"));
+  };
+
+  useEffect(() => {
+    // if user and receiver exist then only we will add listner as well as fetch messages
+    if (user && receiver) {
+      fetchAllMessages();
+      const messageId =
+        user._id >= receiver._id
+          ? user._id + receiver._id
+          : receiver._id + user._id;
+
+      socket.on(messageId, receivedMessage);
+
+      return () => {
+        socket.off(messageId, receivedMessage);
+      };
+    }
+  }, [receiver, user]);
+
   return (
     <HisContext.Provider
-      value={{ user, login, signup, logout, updateProfile, uploadProfilePic }}
+      value={{
+        user,
+        login,
+        signup,
+        logout,
+        updateProfile,
+        uploadProfilePic,
+        users,
+        receiver,
+        setReceiver,
+        sendMessage,
+        messages,
+      }}
     >
       {children}
     </HisContext.Provider>

@@ -1,22 +1,26 @@
-import React from "react";
+import React, { useContext } from "react";
+import { HisContext } from "../../HisContext";
 
-export default function LeftCard() {
+export default function LeftCard({ name, imgUrl, _id }) {
+  const { setReceiver } = useContext(HisContext);
+
   return (
-    <div className="chat_list active_chat">
+    <div
+      className="chat_list active_chat"
+      id="user-card-t"
+      onClick={() => setReceiver({ name, imgUrl, _id })}
+    >
       <div className="chat_people">
         <div className="chat_img">
           {" "}
           <img
-            src="https://ptetutorials.com/images/user-profile.png"
+            style={{ width: "50px", height: "50px", borderRadius: "50%" }}
+            src={imgUrl}
             alt="sunil"
           />{" "}
         </div>
         <div className="chat_ib">
-          <h5>Ashish Kumar</h5>
-          <p>
-            Test, which is a new approach to have all solutions astrology under
-            one roof.
-          </p>
+          <h5 style={{ marginTop: 5 }}>{name}</h5>
         </div>
       </div>
     </div>

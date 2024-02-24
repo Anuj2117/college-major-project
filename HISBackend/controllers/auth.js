@@ -48,6 +48,7 @@ const login = async (req, res) => {
         address: user.address,
         imgUrl: user.imgUrl,
         accessToken: token,
+        _id: user._id,
       },
     });
   } catch (err) {
