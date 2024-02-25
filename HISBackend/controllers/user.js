@@ -43,7 +43,7 @@ const updateProfliePhoto = async (req, res) => {
 const getAllDoctors = async (req, res) => {
   try {
     const doctors = await User.find({ role: "DOCTOR", active: true }).select(
-      "name _id imgUrl phoneNumber"
+      "name address gender email _id imgUrl phoneNumber"
     );
 
     return res.status(200).json({ success: true, doctors });
@@ -55,8 +55,23 @@ const getAllDoctors = async (req, res) => {
 const getAllpatients = async (req, res) => {
   try {
     const patients = await User.find({ role: "PATIENT", active: true }).select(
-      "name _id imgUrl phoneNumber"
+      "name address gender email _id imgUrl phoneNumber"
     );
+
+    return res.status(200).json({ success: true, patients });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+const getPatientByName = async (req, res) => {
+  const { name } = req.params;
+  try {
+    const patients = await User.find({
+      $text: { $search: name },
+      role: "PATIENT",
+      active: true,
+    }).select("name address gender email _id imgUrl phoneNumber");
 
     return res.status(200).json({ success: true, patients });
   } catch (err) {
@@ -101,4 +116,5 @@ module.exports = {
   getAllpatients,
   getAllMessages,
   sendMessage,
+  getPatientByName,
 };

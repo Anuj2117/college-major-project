@@ -1,20 +1,32 @@
 import React, { useContext, useRef, useState, useEffect } from "react";
 import { HisContext } from "../../HisContext";
-
+import ClipImage from "../../assets/clip.png";
 import "./chat.css";
 import LeftCard from "./LeftCard";
 
 export default function Chat() {
-  const { users, sendMessage, messages, user, receiver } =
-    useContext(HisContext);
+  const {
+    users,
+    sendMessage,
+    messages,
+    user,
+    receiver,
+    sendFile,
+    loadAlltheUsers,
+  } = useContext(HisContext);
 
   const [message, setMessage] = useState("");
 
   const lastRef = useRef(null);
+  const fileRef = useRef(null);
 
   useEffect(() => {
     lastRef.current.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    loadAlltheUsers();
+  }, [user]);
 
   return (
     <div className="container-fluid" style={{ margin: 0, padding: 0 }}>
@@ -25,6 +37,9 @@ export default function Chat() {
           </div>
         </div>
         <div className="inbox_chat">
+          {users.length == 0 && (
+            <p style={{ textAlign: "center" }}>No Users Found</p>
+          )}
           {users.map((item, index) => (
             <LeftCard
               key={index}
@@ -43,9 +58,20 @@ export default function Chat() {
           {messages.map((item, index) => {
             if (user._id == item.sender) {
               return (
-                <div className="outgoing_msg">
+                <div key={index} className="outgoing_msg">
                   <div className="sent_msg">
-                    <p>{item && item.content}</p>
+                    {item.file ? (
+                      <a
+                        style={{ textDecoration: "none" }}
+                        target="_blank"
+                        href={item?.content}
+                      >
+                        <i class="fa-solid fa-download"></i>{" "}
+                        {item && item?.content.split("/").pop()}
+                      </a>
+                    ) : (
+                      <p>{item && item?.content}</p>
+                    )}
                     <span className="time_date">
                       {" "}
                       {new Date(item && item.createdAt).toLocaleString()}
@@ -55,7 +81,7 @@ export default function Chat() {
               );
             } else {
               return (
-                <div className="incoming_msg">
+                <div key={index} className="incoming_msg">
                   <div className="incoming_msg_img">
                     {" "}
                     <img
@@ -66,7 +92,18 @@ export default function Chat() {
                   </div>
                   <div className="received_msg">
                     <div className="received_withd_msg">
-                      <p>{item && item.content}</p>
+                      {item.file ? (
+                        <a
+                          style={{ textDecoration: "none" }}
+                          target="_blank"
+                          href={item?.content}
+                        >
+                          <i class="fa-solid fa-download"></i>{" "}
+                          {item && item?.content.split("/").pop()}
+                        </a>
+                      ) : (
+                        <p>{item && item?.content}</p>
+                      )}
                       <span className="time_date">
                         {" "}
                         {new Date(item && item.createdAt).toLocaleString()}
@@ -96,9 +133,21 @@ export default function Chat() {
                 className="write_msg"
                 placeholder="Type a message"
               />
-              <button className="msg_send_btn" type="button">
-                &#8618;
+              <button
+                disabled={receiver == null}
+                className="msg_send_btn"
+                type="button"
+                onClick={() => fileRef.current.click()}
+              >
+                <img width="50px" src={ClipImage} />
               </button>
+
+              <input
+                onChange={(e) => sendFile(e.currentTarget.files[0])}
+                ref={fileRef}
+                style={{ display: "none" }}
+                type="file"
+              />
             </div>
           </form>
         </div>

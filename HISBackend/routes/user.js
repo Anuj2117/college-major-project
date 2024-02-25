@@ -6,6 +6,7 @@ const {
   updateProfliePhoto,
   getAllDoctors,
   getAllMessages,
+  getPatientByName,
 } = require("../controllers/user");
 const { isPatient, isDoctor } = require("../middlewares/auth");
 const { upload } = require("../middlewares/multer");
@@ -24,5 +25,6 @@ router.get("/doctors/all", isPatient, getAllDoctors);
 
 // PATIENT ROUTES
 router.get("/patients/all", isDoctor, getAllpatients);
+router.get("/patients/:name", isDoctor, getPatientByName);
 
 module.exports = router;

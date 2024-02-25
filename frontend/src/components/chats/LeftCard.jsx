@@ -2,11 +2,13 @@ import React, { useContext } from "react";
 import { HisContext } from "../../HisContext";
 
 export default function LeftCard({ name, imgUrl, _id }) {
-  const { setReceiver } = useContext(HisContext);
+  const { setReceiver, receiver } = useContext(HisContext);
 
   return (
     <div
-      className="chat_list active_chat"
+      className={
+        receiver && receiver._id == _id ? "chat_list active_chat" : "chat_list"
+      }
       id="user-card-t"
       onClick={() => setReceiver({ name, imgUrl, _id })}
     >

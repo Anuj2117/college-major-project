@@ -3,6 +3,7 @@ import UpdateProfile from "./UpdateProfile/UpdateProfile";
 import Patients from "./Patients";
 import Chat from "./chats/Chat";
 import { HisContext } from "../HisContext";
+import DoctorAppointment from "./appointements/doctors/DoctorAppointment";
 export default function DoctorDashboard() {
   // appointement patient chat profile
   const [option, setOption] = useState("appointement");
@@ -99,8 +100,8 @@ export default function DoctorDashboard() {
 
         <div className="col" style={{ margin: 0, padding: 0 }}>
           {option == "chat" && <Chat />}
-          {option == "appointement" && <h1>Upcoming</h1>}
-          {option == "patient" && <Patients />}
+          {option == "appointement" && <DoctorAppointment />}
+          {option == "patient" && <Patients setOption={setOption} />}
           {option == "profile" && <UpdateProfile />}
         </div>
       </div>

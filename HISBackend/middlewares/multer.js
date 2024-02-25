@@ -16,7 +16,7 @@ const upload = multer({
   storage: multerS3({
     s3: myS3,
     acl: "public-read",
-    bucket: "newhisbucket",
+    bucket: "newhisbucket2",
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: (req, file, cb) => {
       console.log("inside the middleware", file);

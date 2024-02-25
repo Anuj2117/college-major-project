@@ -193,7 +193,21 @@ export default function HisProvider({ children }) {
     }
   };
 
-  useEffect(() => {
+  const sendFile = (file) => {
+    if (file && user && receiver) {
+      const payload = {
+        file,
+        receiverId: receiver._id,
+        senderId: user && user._id,
+        fileName: file.name,
+      };
+      socket.emit("file-receiver", payload);
+    } else {
+      toast.error("Unable to send File");
+    }
+  };
+
+  const loadAlltheUsers = () => {
     if (user) {
       if (user.role == "DOCTOR") {
         fetchAllPatients();
@@ -201,6 +215,9 @@ export default function HisProvider({ children }) {
         fetchAllDoctors();
       }
     }
+  };
+  useEffect(() => {
+    loadAlltheUsers();
   }, [user]);
 
   // CHAT THING IS GOING TO START FROM HERE //
@@ -230,6 +247,25 @@ export default function HisProvider({ children }) {
       .catch((err) => toast.error("Error while loading messages"));
   };
 
+  const fetchPatientByName = (name) => {
+    fetch(`${BASE_URL}/user/patients/${name}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user && user.accessToken,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setUsers(data.patients);
+        } else {
+          toast.error(data.message);
+        }
+      })
+      .catch((err) => alert(err.message));
+  };
+
   useEffect(() => {
     // if user and receiver exist then only we will add listner as well as fetch messages
     if (user && receiver) {
@@ -247,6 +283,7 @@ export default function HisProvider({ children }) {
     }
   }, [receiver, user]);
 
+  console.log(receiver);
   return (
     <HisContext.Provider
       value={{
@@ -261,6 +298,10 @@ export default function HisProvider({ children }) {
         setReceiver,
         sendMessage,
         messages,
+        sendFile,
+        fetchPatientByName,
+
+        loadAlltheUsers,
       }}
     >
       {children}

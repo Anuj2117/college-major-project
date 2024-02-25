@@ -1,6 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
+import { HisContext } from "../../HisContext";
 import "./usercard.css";
-export default function UserCard() {
+export default function UserCard({
+  name,
+  imgUrl,
+  email,
+  address,
+  phoneNumber,
+  gender,
+  _id,
+  setOption,
+}) {
+  const { setReceiver } = useContext(HisContext);
   return (
     <div className="container user-card profile-page mt-2">
       <div class="card profile-header">
@@ -10,19 +21,38 @@ export default function UserCard() {
               <div className="profile-image float-md-right">
                 {" "}
                 <img
-                  src="https://bootdey.com/img/Content/avatar/avatar7.png"
+                  style={{ width: "90px", height: "90px", borderRadius: "50%" }}
+                  src={imgUrl}
                   alt=""
                 />{" "}
               </div>
             </div>
             <div className="col-lg-8 col-md-8 col-12">
               <h4 className="m-t-0 m-b-0">
-                <strong>Michael</strong> Deo
+                <strong>{name}</strong>
               </h4>
-              <span className="job_post">Ui UX Designer</span>
-              <p>795 Folsom Ave, Suite 600 San Francisco, CADGE 94107</p>
+              <span className="job_post">{email}</span>
+              <br />
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span className="job_post">
+                  <b>Phone</b>: {phoneNumber}
+                </span>
+                <span className="job_post">
+                  {" "}
+                  <b>Gender</b>: {gender}
+                </span>
+              </div>
+              <p>
+                {address?.street} , {address?.city}, {address?.state}{" "}
+              </p>
               <div>
-                <button className="btn btn-primary btn-round btn-simple">
+                <button
+                  onClick={() => {
+                    setReceiver({ name, imgUrl, _id });
+                    setOption("chat");
+                  }}
+                  className="btn btn-primary btn-round btn-simple"
+                >
                   Message
                 </button>
               </div>
