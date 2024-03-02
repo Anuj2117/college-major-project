@@ -8,6 +8,8 @@ export default function DoctorDashboard() {
   // appointement patient chat profile
   const [option, setOption] = useState("appointement");
   const { logout, user } = useContext(HisContext);
+
+  console.log(option);
   return (
     <div>
       <div className="row">
@@ -100,7 +102,9 @@ export default function DoctorDashboard() {
 
         <div className="col" style={{ margin: 0, padding: 0 }}>
           {option == "chat" && <Chat />}
-          {option == "appointement" && <DoctorAppointment />}
+          {option == "appointement" && (
+            <DoctorAppointment setOption={setOption} />
+          )}
           {option == "patient" && <Patients setOption={setOption} />}
           {option == "profile" && <UpdateProfile />}
         </div>

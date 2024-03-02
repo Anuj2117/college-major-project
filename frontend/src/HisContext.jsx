@@ -300,7 +300,7 @@ export default function HisProvider({ children }) {
         messages,
         sendFile,
         fetchPatientByName,
-
+        BASE_URL,
         loadAlltheUsers,
       }}
     >

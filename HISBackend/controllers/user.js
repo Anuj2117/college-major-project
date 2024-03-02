@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const Messages = require("../models/Messages");
-
+const Appointment = require("../models/Appointments");
 const updateProfile = async (req, res) => {
   const { name, phone, about, address } = req.body;
 
@@ -109,6 +109,59 @@ const sendMessage = async (payload, file) => {
   return messageDoc;
 };
 
+// SLOTS
+
+// Open Slot : Doctor
+const openSlot = async (req, res) => {
+  const { start, end } = req.body;
+  console.log(start, end);
+  // is slot aready opened
+  const slot = await Appointment.findOne({
+    openedBy: req.user._id,
+    start,
+    end,
+  });
+  console.log(slot);
+  if (slot) {
+    return res
+      .status(400)
+      .json({ success: false, message: "This slot already opened" });
+  }
+
+  const newSlot = await Appointment.create({
+    openedBy: req.user._id,
+    start,
+    end,
+  });
+
+  return res
+    .status(200)
+    .json({ success: true, message: "Slot Opened", newSlot });
+};
+
+// Read Slot : Doctor
+const getAllDoctorSlots = async (req, res) => {
+  const slots = await Appointment.find({ openedBy: req.user._id }).populate(
+    "bookedBy",
+    "name email imgUrl _id"
+  );
+  return res.status(200).json({ success: true, slots });
+};
+
+// Delete slot: Doctor
+const deleteSlot = async (req, res) => {
+  const { slotId } = req.params;
+  const del = await Appointment.findOneAndDelete({
+    _id: slotId,
+    openedBy: req.user._id,
+    isBooked: false,
+  });
+  if (del) {
+    return res.status(200).json({ success: true, message: "Slot Deleted" });
+  }
+  return res.status(500).json({ success: true, message: "Invalid Details" });
+};
+
 module.exports = {
   updateProfile,
   updateProfliePhoto,
@@ -117,4 +170,7 @@ module.exports = {
   getAllMessages,
   sendMessage,
   getPatientByName,
+  openSlot,
+  getAllDoctorSlots,
+  deleteSlot,
 };
