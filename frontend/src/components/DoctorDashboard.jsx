@@ -9,7 +9,6 @@ export default function DoctorDashboard() {
   const [option, setOption] = useState("appointement");
   const { logout, user } = useContext(HisContext);
 
-  console.log(option);
   return (
     <div>
       <div className="row">

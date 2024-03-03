@@ -30,15 +30,15 @@ export default function PatientDashboard() {
                 Appointments
               </a>
             </li>
-            <li onClick={() => setOption("patient")}>
+            <li onClick={() => setOption("doctor")}>
               <a
                 className={
-                  option == "patient"
+                  option == "doctor"
                     ? "nav-link text-white active"
                     : "nav-link text-white"
                 }
               >
-                Patients
+                Doctors
               </a>
             </li>
             <li onClick={() => setOption("chat")}>
@@ -99,7 +99,7 @@ export default function PatientDashboard() {
         <div className="col" style={{ margin: 0, padding: 0 }}>
           {option == "chat" && <Chat />}
           {option == "appointement" && <h1>Upcoming</h1>}
-          {option == "patient" && <Doctors />}
+          {option == "doctor" && <Doctors setOption={setOption} />}
           {option == "profile" && <UpdateProfile />}
         </div>
       </div>

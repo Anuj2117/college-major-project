@@ -27,6 +27,7 @@ export default function Patients({ setOption }) {
         >
           <div className="mb-3">
             <input
+              value={name}
               onChange={(e) => setName(e.currentTarget.value)}
               type="text"
               className="form-control"
@@ -37,7 +38,13 @@ export default function Patients({ setOption }) {
           </div>
         </form>
 
-        <button onClick={loadAlltheUsers} className="btn btn-sm btn-primary">
+        <button
+          onClick={() => {
+            loadAlltheUsers();
+            setName("");
+          }}
+          className="btn btn-sm btn-primary"
+        >
           Reset
         </button>
       </div>

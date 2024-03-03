@@ -218,6 +218,7 @@ export default function HisProvider({ children }) {
   };
   useEffect(() => {
     loadAlltheUsers();
+    if (user) fetchAllDepartments();
   }, [user]);
 
   // CHAT THING IS GOING TO START FROM HERE //
@@ -266,6 +267,65 @@ export default function HisProvider({ children }) {
       .catch((err) => alert(err.message));
   };
 
+  const fetchDoctorByName = (name) => {
+    fetch(`${BASE_URL}/user/doctors/${name}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user && user.accessToken,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setUsers(data.doctors);
+        } else {
+          toast.error(data.message);
+        }
+      })
+      .catch((err) => alert(err.message));
+  };
+
+  const fetchDoctorsByDepartment = (departmentId) => {
+    fetch(`${BASE_URL}/user/doctors/department/${departmentId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user && user.accessToken,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setUsers(data.doctors);
+        } else {
+          toast.error(data.message);
+        }
+      })
+      .catch((err) => alert(err.message));
+  };
+
+  const [departments, setDepartments] = useState([]);
+
+  const fetchAllDepartments = () => {
+    fetch(`${BASE_URL}/user/departments`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user && user.accessToken,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setDepartments(data.departments);
+        } else {
+          toast.error(data.message);
+        }
+      })
+      .catch((err) => alert(err.message));
+  };
+
   useEffect(() => {
     // if user and receiver exist then only we will add listner as well as fetch messages
     if (user && receiver) {
@@ -302,6 +362,9 @@ export default function HisProvider({ children }) {
         fetchPatientByName,
         BASE_URL,
         loadAlltheUsers,
+        fetchDoctorByName,
+        departments,
+        fetchDoctorsByDepartment,
       }}
     >
       {children}

@@ -10,6 +10,10 @@ export default function UserCard({
   gender,
   _id,
   setOption,
+  about,
+  departmentName,
+  popupRef,
+  setClickedDoctorId,
 }) {
   const { setReceiver } = useContext(HisContext);
   return (
@@ -45,6 +49,10 @@ export default function UserCard({
               <p>
                 {address?.street} , {address?.city}, {address?.state}{" "}
               </p>
+
+              {about && <p>About : {about}</p>}
+              {departmentName && <p>Department : {departmentName}</p>}
+
               <div>
                 <button
                   onClick={() => {
@@ -55,6 +63,17 @@ export default function UserCard({
                 >
                   Message
                 </button>
+                {departmentName && (
+                  <button
+                    onClick={() => {
+                      setClickedDoctorId(_id);
+                      popupRef.current.click();
+                    }}
+                    className="mx-2 btn btn-primary btn-round btn-simple"
+                  >
+                    Book Slot
+                  </button>
+                )}
               </div>
             </div>
           </div>
