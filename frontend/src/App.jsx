@@ -13,6 +13,7 @@ import { HisContext } from "./HisContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useContext } from "react";
+import AdminDashboard from "./components/AdminDashboard";
 
 function App() {
   const { user } = useContext(HisContext);
@@ -40,6 +41,16 @@ function App() {
             element={
               <ProtectedRoute>
                 <PatientDashboard />
+              </ProtectedRoute>
+            }
+          />
+        )}
+        {user && user.role == "ADMIN" && (
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
               </ProtectedRoute>
             }
           />

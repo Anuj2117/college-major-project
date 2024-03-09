@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const jwt = require("jsonwebtoken");
 const { v4: uuidv4 } = require("uuid");
-
+const { validationResult } = require("express-validator");
 // Create doctor account
 const createDoctor = async (req, res) => {
   const { name, email, phoneNumber, gender, departmentId } = req.body;
@@ -82,7 +82,7 @@ const createDoctor = async (req, res) => {
 
 // View All the doctors
 const getAllDoctors = async (req, res) => {
-  const doctors = await User.find({ role: "DOCTOR" });
+  const doctors = await User.find({ role: "DOCTOR" }).populate("departmentId");
   return res.status(200).json({ success: true, doctors });
 };
 

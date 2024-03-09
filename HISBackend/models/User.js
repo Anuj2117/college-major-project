@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
+    unique: true,
   },
   phoneNumber: {
     type: String,
@@ -46,7 +47,7 @@ const UserSchema = new mongoose.Schema({
   about: {
     type: String,
     required: true,
-    default: "",
+    default: " ",
   },
   imgUrl: {
     type: String,

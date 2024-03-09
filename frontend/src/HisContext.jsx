@@ -10,10 +10,12 @@ export default function HisProvider({ children }) {
   const BASE_URL = "http://localhost:3001";
 
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const login = (email, password) => {
+    setLoading(true);
     fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
       headers: {
@@ -23,26 +25,33 @@ export default function HisProvider({ children }) {
     })
       .then((res) => res.json())
       .then((data) => {
+        setLoading(false);
         if (data.success) {
           // 1. Store the data in the user state
           setUser(data.user);
+          localStorage.setItem("user", JSON.stringify(data.user));
           // 2. Navigate to the routes according to role
           const role = data.user.role;
           if (role == "DOCTOR") {
             navigate("/doctor/dashboard");
           } else if (role == "PATIENT") {
             navigate("/patient/dashboard");
-          } else {
+          } else if (role == "ADMIN") {
+            navigate("/admin/dashboard");
           }
         } else {
           toast.error(data.message);
         }
       })
-      .catch((err) => alert(err.message));
+      .catch((err) => {
+        setLoading(false);
+        alert(err.message);
+      });
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem("user");
     navigate("/");
   };
 
@@ -343,7 +352,22 @@ export default function HisProvider({ children }) {
     }
   }, [receiver, user]);
 
-  console.log(receiver);
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      let temp = localStorage.getItem("user");
+      temp = JSON.parse(temp);
+      setUser(temp);
+      let role = temp.role;
+      if (role == "DOCTOR") {
+        navigate("/doctor/dashboard");
+      } else if (role == "PATIENT") {
+        navigate("/patient/dashboard");
+      } else if (role == "ADMIN") {
+        navigate("/admin/dashboard");
+      }
+    }
+  }, []);
+
   return (
     <HisContext.Provider
       value={{
@@ -365,6 +389,8 @@ export default function HisProvider({ children }) {
         fetchDoctorByName,
         departments,
         fetchDoctorsByDepartment,
+        setLoading,
+        loading,
       }}
     >
       {children}

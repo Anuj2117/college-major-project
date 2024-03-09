@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { HisContext } from "../HisContext";
+import PatientAppointment from "./appointements/patients/PatientAppointment";
 import Chat from "./chats/Chat";
 import Doctors from "./Doctors";
 import UpdateProfile from "./UpdateProfile/UpdateProfile";
@@ -98,7 +99,9 @@ export default function PatientDashboard() {
 
         <div className="col" style={{ margin: 0, padding: 0 }}>
           {option == "chat" && <Chat />}
-          {option == "appointement" && <h1>Upcoming</h1>}
+          {option == "appointement" && (
+            <PatientAppointment setOption={setOption} />
+          )}
           {option == "doctor" && <Doctors setOption={setOption} />}
           {option == "profile" && <UpdateProfile />}
         </div>

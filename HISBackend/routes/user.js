@@ -10,6 +10,12 @@ const {
   openSlot,
   getAllDoctorSlots,
   deleteSlot,
+  getDoctorByName,
+  getDoctorByDepartment,
+  getAllDepartments,
+  getAllDoctorAvailabeSlots,
+  bookSlot,
+  getAllPatientSlots,
 } = require("../controllers/user");
 const { isPatient, isDoctor } = require("../middlewares/auth");
 const { upload } = require("../middlewares/multer");
@@ -32,4 +38,21 @@ router.post("/doctors/slots/open", isDoctor, openSlot);
 router.get("/doctors/slots/all", isDoctor, getAllDoctorSlots);
 router.delete("/doctors/slots/delete/:slotId", isDoctor, deleteSlot);
 
+// Patiens
+router.get("/doctors/:name", isPatient, getDoctorByName);
+router.get(
+  "/doctors/department/:dpartmentId",
+  isPatient,
+  getDoctorByDepartment
+);
+
+router.get(
+  "/patients/get-doctor-open-slots/:doctorId",
+  getAllDoctorAvailabeSlots
+);
+
+router.put("/patients/book/:slotId", isPatient, bookSlot);
+router.get("/departments", getAllDepartments);
+
+router.get("/patients/slots/all", isPatient, getAllPatientSlots);
 module.exports = router;

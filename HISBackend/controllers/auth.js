@@ -124,7 +124,7 @@ const signup = async (req, res) => {
       message: "Email has been sent to activate your account",
     });
   } catch (err) {
-    return res.status(500).json({ success: false, messaeg: err.message });
+    return res.status(500).json({ success: false, message: err.message });
   }
 };
 

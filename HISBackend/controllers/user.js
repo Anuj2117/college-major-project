@@ -1,6 +1,9 @@
 const User = require("../models/User");
 const Messages = require("../models/Messages");
 const Appointment = require("../models/Appointments");
+const Departments = require("../models/Department");
+const Appointments = require("../models/Appointments");
+
 const updateProfile = async (req, res) => {
   const { name, phone, about, address } = req.body;
 
@@ -42,9 +45,9 @@ const updateProfliePhoto = async (req, res) => {
 
 const getAllDoctors = async (req, res) => {
   try {
-    const doctors = await User.find({ role: "DOCTOR", active: true }).select(
-      "name address gender email _id imgUrl phoneNumber"
-    );
+    const doctors = await User.find({ role: "DOCTOR", active: true })
+      .select("name address gender email _id imgUrl phoneNumber about")
+      .populate("departmentId");
 
     return res.status(200).json({ success: true, doctors });
   } catch (err) {
@@ -148,6 +151,15 @@ const getAllDoctorSlots = async (req, res) => {
   return res.status(200).json({ success: true, slots });
 };
 
+// Read Slot : Patient
+const getAllPatientSlots = async (req, res) => {
+  const slots = await Appointment.find({ bookedBy: req.user._id }).populate(
+    "openedBy",
+    "name email imgUrl _id"
+  );
+  return res.status(200).json({ success: true, slots });
+};
+
 // Delete slot: Doctor
 const deleteSlot = async (req, res) => {
   const { slotId } = req.params;
@@ -162,6 +174,66 @@ const deleteSlot = async (req, res) => {
   return res.status(500).json({ success: true, message: "Invalid Details" });
 };
 
+// Patients
+const getDoctorByName = async (req, res) => {
+  const { name } = req.params;
+  try {
+    const doctors = await User.find({
+      $text: { $search: name },
+      role: "DOCTOR",
+      active: true,
+    })
+      .select("name address gender email _id imgUrl phoneNumber about")
+      .populate("departmentId");
+
+    return res.status(200).json({ success: true, doctors });
+  } catch (err) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+const getDoctorByDepartment = async (req, res) => {
+  const { dpartmentId } = req.params;
+  const doctors = await User.find({
+    active: true,
+    role: "DOCTOR",
+    departmentId: dpartmentId,
+  })
+    .select("name address gender email _id imgUrl phoneNumber about")
+    .populate("departmentId");
+  return res.status(200).json({ success: true, doctors });
+};
+
+const getAllDepartments = async (req, res) => {
+  const departments = await Departments.find();
+  return res.status(200).json({ success: true, departments });
+};
+
+// Patients
+const getAllDoctorAvailabeSlots = async (req, res) => {
+  const { doctorId } = req.params;
+  console.log(doctorId);
+  const slots = await Appointment.find({ openedBy: doctorId, isBooked: false });
+  return res.status(200).json({ success: true, slots });
+};
+
+const bookSlot = async (req, res) => {
+  const { slotId } = req.params;
+  const changed = await Appointments.findOneAndUpdate(
+    {
+      _id: slotId,
+      isBooked: false,
+    },
+    {
+      bookedBy: req.user._id,
+      isBooked: true,
+    }
+  );
+  if (!changed)
+    return res.status(500).json({ success: false, message: "Invalid Slot" });
+
+  return res.status(200).json({ success: true, message: "Slot Booked" });
+};
 module.exports = {
   updateProfile,
   updateProfliePhoto,
@@ -173,4 +245,10 @@ module.exports = {
   openSlot,
   getAllDoctorSlots,
   deleteSlot,
+  getDoctorByName,
+  getDoctorByDepartment,
+  getAllDepartments,
+  getAllDoctorAvailabeSlots,
+  bookSlot,
+  getAllPatientSlots,
 };
