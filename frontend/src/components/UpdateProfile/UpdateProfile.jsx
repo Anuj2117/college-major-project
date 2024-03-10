@@ -1,8 +1,10 @@
 import React, { useContext, useState, useRef } from "react";
+import { toast } from "react-toastify";
 import { HisContext } from "../../HisContext";
 import "./updateProfile.css";
 export default function UpdateProfile() {
-  const { user, uploadProfilePic, updateProfile } = useContext(HisContext);
+  const { user, uploadProfilePic, updateProfile, changePassword } =
+    useContext(HisContext);
 
   const [name, setName] = useState(user ? user.name : "");
   const [phone, setPhone] = useState(user ? user.phoneNumber : "");
@@ -19,6 +21,10 @@ export default function UpdateProfile() {
   const [zip, setZip] = useState(user && user.address ? user.address.zip : "");
 
   const imageRef = useRef(null);
+
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [newPassword2, setNewPassword2] = useState("");
 
   return (
     <div className="container">
@@ -47,6 +53,51 @@ export default function UpdateProfile() {
                 <div className="about">
                   <h5>About</h5>
                   <p>{user && user.about}</p>
+                </div>
+                <div className="about">
+                  <h5>Change Password</h5>
+                  <div className="form-group my-2">
+                    <input
+                      value={oldPassword}
+                      onChange={(e) => setOldPassword(e.currentTarget.value)}
+                      type="text"
+                      className="form-control"
+                      id="phone"
+                      placeholder="Old Password"
+                    />
+                  </div>
+                  <div className="form-group my-2">
+                    <input
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.currentTarget.value)}
+                      type="text"
+                      className="form-control"
+                      id="phone"
+                      placeholder="New Password"
+                    />
+                    <div className="form-group my-2">
+                      <input
+                        value={newPassword2}
+                        onChange={(e) => setNewPassword2(e.currentTarget.value)}
+                        type="text"
+                        className="form-control"
+                        id="phone"
+                        placeholder="Confirm New Password"
+                      />
+                    </div>
+                    <button
+                      onClick={() => {
+                        if (newPassword != newPassword2) {
+                          toast.error("Password are not matching");
+                        } else {
+                          changePassword(oldPassword, newPassword);
+                        }
+                      }}
+                      className="btn btn-primary btn-sm"
+                    >
+                      Change Password
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

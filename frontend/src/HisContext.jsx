@@ -49,6 +49,29 @@ export default function HisProvider({ children }) {
       });
   };
 
+  const changePassword = (oldPassword, newPassword) => {
+    fetch(`${BASE_URL}/auth/change-password`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: user && user.accessToken,
+      },
+      body: JSON.stringify({ oldPassword, newPassword }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          toast.success("Password Changed");
+        } else {
+          toast.error(data.message);
+        }
+      })
+      .catch((err) => {
+        setLoading(false);
+        alert(err.message);
+      });
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem("user");
@@ -391,6 +414,7 @@ export default function HisProvider({ children }) {
         fetchDoctorsByDepartment,
         setLoading,
         loading,
+        changePassword,
       }}
     >
       {children}
