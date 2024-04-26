@@ -69,7 +69,7 @@ const createDoctor = async (req, res) => {
 
     \n ${url} `,
   };
-
+  console.log(password);
   // sending the email
   mailTransporter.sendMail(mailDetails);
   console.log(url);

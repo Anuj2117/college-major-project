@@ -31,7 +31,7 @@ const UserSchema = new mongoose.Schema({
   active: {
     type: Boolean,
     required: true,
-    default: false,
+    default: true,
   },
   departmentId: {
     type: mongoose.Schema.Types.ObjectId,

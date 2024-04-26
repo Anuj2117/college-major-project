@@ -78,7 +78,7 @@ const signup = async (req, res) => {
       gender,
       phoneNumber,
       password: hashedPassword,
-      role: "ADMIN",
+     
     });
 
     // send activation email
